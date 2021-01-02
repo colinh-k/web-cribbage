@@ -1,0 +1,386 @@
+*, *::after, *::before {
+    box-sizing: border-box;
+    /* prevent user form selecting text content */
+    user-select: none;
+    -webkit-user-select: none; /* specific for safari */
+    cursor: default;
+}
+
+html {
+    background: #f9f7f3;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    height: 100vh;
+    margin: 0;
+    background-color:  #f9f7f3;
+    display: flex;
+}
+
+/* start page */
+.welcome-container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.end-container {
+    text-align: center;
+}
+
+.final-score-message-container {
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 25px;
+}
+
+.break {
+    flex-basis: 100%;
+    height: 0;
+}
+
+.score-container, .final-score-container {
+    background-color: #f9d170;
+    box-shadow: 5px 5px #999;
+    color: #4c2982;
+    padding: 10px 20px;
+    /* height: 7rem; */
+    width: 270px;
+    border-radius: 0.5rem;
+}
+
+.final-score-container {
+    margin: 30px auto;
+}
+
+.welcome-content-container {
+    text-align: center;
+}
+
+.title-container, .winner-container {
+    height: 100px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 80px;
+    /* min-width: 1500px; */
+}
+
+.welcome-notes-container {
+    margin: 30px auto;
+    height: auto;
+    width: 747px;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: left;
+}
+
+.welcome-notes-container a {
+    color: #4c2982;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.welcome-notes-container a:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.welcome-continue-button, .confirmation-button, .go-button {
+    width: 120px;
+    height: 50px;
+
+    border: none;
+    margin: 0 auto;
+    font: inherit;
+    font-weight: 700;
+    font-size: 20px;
+    background:  #f9d170;
+    color:  #4c2982;
+    /* padding-top: 4px; */
+    padding: 15px 20px;
+    cursor: pointer;
+    border-radius: .5rem;
+
+    box-shadow: 5px 5px #999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.score-button {
+    width: 220px;
+}
+
+.welcome-continue-button:hover, .confirmation-button:hover, .go-button:hover {
+    box-shadow: 0 0 #666;
+    transform: translate(4px, 4px);
+    border: 3px solid #4c2982;
+}
+/* END WELCOME ELEMENTS */
+
+/* game container elements */
+.game-container {
+    /* position: absolute; */
+    display: block;
+    gap: 100px 20px;
+    place-content: center;
+    justify-content: space-between;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    margin: 40px 40px 40px 10px;
+    height: auto;
+    width: 59%;
+    display: grid;
+    grid-template-rows: repeat(3,7rem);
+    grid-template-columns: auto auto auto;
+
+   /*  min-height: 700px;
+    min-width: 700px; */
+
+    /* border: 3px solid indigo; */
+}
+
+.com-cards-container {
+    grid-area: 1 / 2 / 2 / 3;
+    /* border: 3px solid blue; */
+}
+
+.com-crib-icon-container {
+    grid-area: 1 / 3 / 2 / 4;
+    /* border: 3px solid violet; */
+}
+
+.starter-card-container {
+    grid-area: 2 / 1 / 3 / 2;
+    /* border: 3px solid green; */
+}
+
+.in-play-container {
+    grid-area: 2 / 2 / 3 / 3;
+    /* border: 3px solid orange; */
+}
+
+.score-container {
+    grid-area: 2 / 3 / 3 / 4;
+    place-self: center;
+    /* place-self: center;
+    background-color: #f9d170;
+    box-shadow: 5px 5px #999;
+    color: #4c2982;
+    padding: 10px 20px;
+    width: auto;
+    border-radius: 0.5rem; */
+}
+
+.player-cards-container {
+    grid-area: 3 / 2 / 4 / 3;
+    /* border: 3px solid red; */
+}
+
+.player-crib-icon-container {
+    grid-area: 3 / 3 / 4 / 4;
+    color: #4c2982;
+    /* border: 3px solid blue; */
+}
+
+.player-crib-icon-container, .com-crib-icon-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.crib-icon {
+    margin: auto;
+    background-color: #f9d170;
+    box-shadow: 5px 5px #999;
+    color: #4c2982;
+    padding: 10px;
+    font-size: 20px;
+    font-weight: 700;
+    border-radius: .5rem;
+}
+
+.com-score, .player-score {
+    font-size: 20px;
+    font-weight: 700;
+
+}
+
+.com-score {
+    margin-bottom: 20px;
+}
+
+.player-score {
+}
+
+.player-cards-container, .com-cards-container, .in-play-container, .starter-card-container {
+    /* display: grid;
+    grid-template-columns: repeat(8, 2.9rem);
+    place-content: center;
+    align-items: center; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+}
+
+/* message container elements */
+.message-container {
+    /* the next four ensure the element has proper margins w/o extending the page */
+    /* position: absolute; */
+    display: block;
+    top: 0;
+    bottom: 0;
+    margin: 40px;
+    height: auto;
+    width: 30%;
+    min-width: 230px;
+    min-height: 200px;
+    white-space: pre-wrap; /* not sure about this; for respecting \n */
+    background-color: rgba(249, 209, 112, .4);
+
+    border: 1px solid #4c2982;
+    border-radius: .5rem;
+
+    overflow: hidden;
+}
+
+.message-content-container {
+    height: 89%;
+    width: 100%;
+    overflow-y: scroll;
+    padding-left: 14px;
+    box-sizing: content-box;
+}
+
+/* ::-webkit-scrollbar-track {
+    border-radius: 10px;
+} */
+
+.message-header {
+    border-bottom: 1px solid black;
+    font-size: 25px;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.message-container li { /* change li to p if no work */
+    margin: 5px 15px 5px 30px;
+    font-size: 18px;
+}
+
+/* button styling */
+
+.button-container {
+    grid-area: 3 / 1 / 4 / 2;
+    place-self: center;
+}
+
+/* change poition values if change card dimensions */
+.confirmation-button {
+    /* grid-area: 3 / 1 / 4 / 2;
+    place-self: center; */
+    height: 60px;
+    margin-bottom: 20px;
+}
+
+.go-button {
+    /* grid-area: 3 / 1 / 4 / 2; */
+    /* width: 100%; */
+}
+
+/* Card styling */
+
+.card, .face-down {
+    position: relative;
+    margin: 5px -20px;
+    height: 7rem; /* 100% */
+    width: 5rem;
+    border: 1px solid #4c2982;
+    border-radius: 0.5rem;
+    user-select: none; /* prevents user from highlighting content */
+    /* center content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.8rem;
+    background-color: white;
+}
+
+.face-down {
+    /* background-color: #F9D170 *//* rgba(249, 209, 112, .2) */
+    background-color: #f9f7f3;
+    background-image: 
+        repeating-linear-gradient(
+        45deg,
+        rgba(249, 209, 112, 1),
+        rgba(249, 209, 112, 1) 3%,
+        transparent 3%,
+        transparent 6%
+        ),
+        repeating-linear-gradient(
+        -45deg,
+        rgba(249, 209, 112, 1),
+        rgba(249, 209, 112, 1) 3%,
+        transparent 3%,
+        transparent 6%
+        );
+    background-size: 100%;
+    color: transparent;    
+}
+
+.player-card {
+    border: 1px solid #4c2982;
+    cursor: pointer;
+}
+
+.player-card:hover, .player-card-active {
+    transform: translateY(-30px);
+    /* border: 2px solid #4c2982; */
+}
+
+.player-card-active {
+    border: 2px solid #4c2982;
+}
+
+.card::before, .card::after {
+    position: absolute;
+    content: attr(data-value);
+    font-size: 1rem;
+}
+
+.card::before {
+    top: 0.5rem;
+    left: 0.5rem;
+}
+
+.card::after {
+    bottom: 0.5rem;
+    right: 0.5rem;
+    transform: rotate(180deg);
+}
+
+.computer-card {
+
+}
+
+.card.red {
+    color: red;
+}
+
+.card.black {
+    color: black;
+}
+
+.hidden {
+    display: none;
+}

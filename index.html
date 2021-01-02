@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Cribbage</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="styles/style.css">
+        <!-- <script src="scripts/script.js" type="module"></script> -->
+        <script src="scripts/deck.js"></script>
+        <script src="scripts/player.js"></script>
+        <script src="scripts/score.js"></script>
+        <script src="scripts/game_manager.js"></script>
+    </head>
+    <body> 
+        <div class="welcome-container">
+            <div class="welcome-content-container">
+                <div class="title-container">Welcome to Cribbage</div>
+                <ul class="welcome-notes-container">
+                    <li>The rules of Cribbage can be found at the following link: <a href="https://bicyclecards.com/how-to-play/cribbage/" target="_blank"> Rules of Cribbage</a></li>
+                    <li>You will play against the Computer.</li>
+                    <li>Click the Continue button to start the game. </li>
+                </ul>
+                <button class="welcome-continue-button" onclick="GameManager.renderGamePage()">
+                    Continue
+                </button>
+            </div>
+        </div>
+        <!-- 
+        <ul class="message-container"></ul>
+        <div class="game-container">
+            <div class="com-cards-container"></div>
+            <div class="starter-card-container"></div>
+            <div class="in-play-container"></div>
+            <div class="score-container"></div>
+            <button class="confirmation-button">Confirm Selection</button>
+            <div class="player-cards-container"></div>
+        </div> -->
+    </body>
+</html>
