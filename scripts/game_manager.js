@@ -1,6 +1,6 @@
 let GameManager = {
 
-    goalPoints: 61,
+    goalPoints: 121,
 
     renderGamePage: function() {
         document.querySelector('body').innerHTML = '';
