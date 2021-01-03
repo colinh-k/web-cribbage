@@ -204,7 +204,7 @@ let Score = {
         })
         return sum;
     },
-
+    
     scoreStraights: function(scoringPlayer, ranks) {
         let message = '', points = 0;
         let scoreData = this.calcStraightsPoints(ranks);
@@ -217,13 +217,13 @@ let Score = {
     },
 
     calcStraightsPoints: function(ranks) {
-        let num3s = 0, num4s = 0;
+        let num3s = 0, num4s = 0, num5s = 0;
         for (let i = 0; i < 6; i++) {
             this.getCombinationsList(ranks, i).forEach(sequenceList => {
                 let sequenceSet = new Set(sequenceList);
                 let isRun = ((this.max(sequenceSet) - this.min(sequenceSet) + 1) === i && sequenceSet.size === i);
                 if (isRun && sequenceSet.size === 5) {
-                    return [5, 1];
+                    num5s++;
                 }
                 if (isRun && sequenceSet.size === 4) {
                     num4s++;
@@ -231,7 +231,10 @@ let Score = {
                 if (isRun && sequenceSet.size === 3) {
                     num3s++;
                 }
-            })
+            });
+            if (num5s) {
+                return [5, 1];
+            }
         }
         if (num4s) {
             return [(num4s * 4), num4s];
