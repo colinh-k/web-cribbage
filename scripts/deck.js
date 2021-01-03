@@ -1,10 +1,6 @@
 const SUITS = ["♠︎", "♣︎", "♥︎", "♦︎"];
 const VALUES = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
 
-/* export {
-    Deck, Card
-}; */
-
 let deck = new Deck();
 
 // post: Returns an array of Card objects representing 52 standard playing cards.
@@ -34,12 +30,6 @@ function Deck() {
             this.cards[currentIndex] = this.cards[randomIndex];
             this.cards[randomIndex] = temporaryVal;
         }
-        /* for (let i = this.numberOfCards - 1; i > 0; i--) {
-            const newIndex = Math.floor(Math.random() * (i + 1));
-            const oldValue = this.cards[newIndex];
-            this.cards[newIndex] = this.cards[i];
-            this.cards[i] = oldValue;
-        } */
     }
 
      // post: Returns an array of cards of length qty.
@@ -47,8 +37,6 @@ function Deck() {
     this.deal = function(qty) {
         let cardsList = [];
         for (let i = 0; i < qty; i++) {
-            /* let card = this.cards.splice(i, 1);
-            this.inPlay = this.inPlay.concat(card); */
             cardsList = cardsList.concat(this.moveToInPlay(i));
         }
         return cardsList;
@@ -62,7 +50,7 @@ function Deck() {
     // post: Removes and returns the card at the index in the deck. The removed card is added to inPlay.
     this.moveToInPlay = function(index) {
         let removed = this.cards.splice(index, 1)[0];
-        this.inPlay.push(removed); /* = this.inPlay.concat(removed); */
+        this.inPlay.push(removed); 
         return removed;
     }
 

@@ -1,6 +1,6 @@
 let GameManager = {
 
-    goalPoints: 121,
+    goalPoints: 61,
 
     renderGamePage: function() {
         document.querySelector('body').innerHTML = '';
@@ -28,10 +28,6 @@ let GameManager = {
             endContainer.appendChild(oldScoreDisplay);
             body.innerHTML = '';
             body.appendChild(endContainer);
-            /* body.innerHTML = '<div class="end-container">' +
-                                 '<div class="winner-container">' + winner + ' is the winner!</div>' +
-                                 '<div class="final-score-message-container">The final score is shown below</div>' +
-                             '</div>'; */
         }
         this.appendMessage(winner + ' has won.', color);
         this.appendMessage('Please click \'Continue\' to move to the end page.', color);
@@ -44,17 +40,12 @@ let GameManager = {
                                                        '<div class="final-score-container"></div>' +
                                                    '</div>';
     },
-    
-    // NOTE: issue when the player runs out of cards before the comptuer on the first round.
-    // The confirmation button still says 'confirm selection' when the player has no cards
-    // The game SHOULD ask the player to continue before scoring the round (like it usually does when the round is over (ie both players are out of cards))
-    // ISSUE DATE: DEC 31 2020 (see associated screenshot)
 
     renderGameElements: function() {
         const body = document.querySelector('body');
         body.innerHTML = '<div class="message-container">' +
                              '<div class="message-header">Messages</div>' +
-                             '<ul class="message-content-container"></ul>' + // change back to div if no work
+                             '<ul class="message-content-container"></ul>' + 
                          '</div>' +
                          '<div class="game-container">' + 
                              '<div class="com-cards-container"></div>' +
@@ -93,7 +84,7 @@ let GameManager = {
         this.addPlayerCardEvents();
         this.appendMessage('The deck has been shuffled.');
         this.appendMessage('You have been delt the cards shown.');
-        this.appendMessage('Please select two cards to lay away for the crib.');
+        this.appendMessage('Please select two cards to lay away for the crib.', '#4c2982');
     },
 
     reset: function() {
@@ -103,7 +94,6 @@ let GameManager = {
         this.alternateDealer();
         player.canPlay = true;
         computer.canPlay = true;
-        /* this.activePlayers = [this.nonDealer, this.dealer]; */
         this.lastToPlay = this.nonDealer;
         this.updateButtonFunction('confirmSelection(2)');
     },
@@ -115,17 +105,9 @@ let GameManager = {
         this.nonDealer = temp;
         document.querySelector('.com-crib-icon-container').classList.toggle('hidden');
         document.querySelector('.player-crib-icon-container').classList.toggle('hidden');
-        /* if (this.dealer.isComputer) {
-            document.querySelector('.com-crib-icon-container').innerHTML = '<div class="crib-icon">Crib</div>';
-        } else {
-            document.querySelector('.player-crib-icon-container').innerHTML = '<div class="crib-icon">Crib</div>';            
-        } */
     },
 
     dealHands: function() {
-        /* ["♠︎", "♣︎", "♥︎", "♦︎"] */
-        /* player.hand =  [new Card("♠︎", 5), new Card("♠︎", 3), new Card("♠︎", 6), new Card("♠︎", 4), new Card("$", 4), new Card("%", 4),];
-        computer.hand = [new Card("♠︎", 2), new Card("♠︎", 4), new Card("♠︎", 2), new Card("♠︎", 4), new Card("♠︎", 4), new Card("♠︎", 4),]; */
         deck.reStackAndShuffle();
         player.hand = deck.deal(6);
         computer.hand = deck.deal(6);
@@ -134,7 +116,6 @@ let GameManager = {
     // puts the message in the message contianer, using a color (black if default)
     appendMessage: function(message, color=false) {
         const msgContainer = document.querySelector('.message-content-container');
-        /* const msgElement = document.createElement('p'); */
         const msgElement = document.createElement('li');
         if (color) {
             msgElement.style.color = color;
@@ -181,9 +162,6 @@ let GameManager = {
             card.onclick = function() {
                 card.classList.toggle('player-card-active');
             }
-            /* card.addEventListener('click', function() {
-                card.classList.toggle('player-card-active');
-            }); */
         });
     },
 
@@ -200,27 +178,25 @@ let GameManager = {
                 this.updateButtonFunction('confirmSelection(1)');
                 this.appendMessage('The crib has been formed.');
                 this.selectAndShowStarterCard();
-                this.appendMessage('The starter card has been selected as shown to the right.');
-                Score.scoreHeels(this.dealer);
+                this.appendMessage('The ' + this.starterCard.rank + ' of ' + this.starterCard.suit + ' has been selected as the starter card.');
+
+                if (this.dealer.isComputer) {
+                    this.appendMessage('The Computer is the dealer.');
+                    Score.scoreHeels(this.dealer);
+                    this.appendMessage('Please select 1 card to play.', '#4c2982');
+                } else {
+                    Score.scoreHeels(this.dealer);
+                    this.appendMessage('Player1 is the dealer.');
+                }
 
                 if (this.gameIsOver()) {
                     return this.activateEndButton('green');
                 }
 
-                if (this.dealer.isComputer) {
-                    this.appendMessage('The Computer is the dealer.');
-                    this.appendMessage('Please select 1 card to play.');
-                } else {
-                    this.appendMessage('Player1 is the dealer.');
-                }
-
-                /* this.appendMessage(((this.dealer.isComputer) ? 'The Computer' : 'Player1') + ' is the dealer.'); */
-                /* this.appendMessage('It is ' + this.activePlayers[0].name + '\'s turn.'); */
                 if (this.nonDealer.isComputer) {
                     this.playComputerCard(this.tableValue);
                     this.updateInPlay();
                 }
-                /* this.appendMessage('Please select 1 card.'); */
             } else {
                 if (this.hasSelectedValidCard(cards[0])) {
                     this.lastToPlay = player;
@@ -236,11 +212,12 @@ let GameManager = {
                         player.canPlay = false;
                     }
 
-                    if (!this.roundIsOver() && this.tableShouldBeReset()) {
+                    if (!this.roundIsOver() && this.tableShouldBeReset()) { 
                         if (!player.canPlay) {
                             this.chooseGo(false);
                         } else {
-                            this.resetTable(this.lastToPlay);
+                            this.scoreAndInformLastToPlay('green');
+                            this.resetTable(); /* pass in true */
                         }
                     } else {
                         if (computer.canPlay) {
@@ -248,27 +225,22 @@ let GameManager = {
                         }
 
                         if (!this.roundIsOver()) {
-                            /* this.tableShouldBeReset(); */
                             if (this.tableShouldBeReset()) {
-                                this.resetTable(this.lastToPlay);
-                            } else { // smae for this else 
+                                this.scoreAndInformLastToPlay();
+                                this.resetTable(); /* pass in true */
+                            } else {
                                 if (!this.containsValidCard(document.querySelector('.player-cards-container').childNodes) && player.canPlay) {
                                     this.updateButtonFunction('chooseGo()');
                                     document.querySelector('.confirmation-button').innerText = 'Go';
                                     this.appendMessage('You must click \'Go\'.');
-                                } else {
-                                    /* while (!this.tableShouldBeReset()) { 
-                                        this.playComputerCard();
-                                        this.updateInPlay();
-                                    }
-                                    this.resetTable(); */
                                 }
                             }
                         } else {
+                            this.scoreAndInformLastToPlay('black', true);
                             const btn = document.querySelector('.confirmation-button');
                             btn.innerText = 'Continue';
                             this.updateButtonFunction('clearForScoring()');
-                            this.appendMessage('Both players are out of cards.');
+                            this.appendMessage('Both players are out of cards.', 'red');
                             this.appendMessage('Click \'Continue\' when ready.');
                         }
                     }
@@ -278,6 +250,122 @@ let GameManager = {
             }
         }
     }, 
+
+    scoreAndInformLastToPlay: function(color='black', roundOver=false) {
+        Score.scoreLastToPlay(this.lastToPlay);
+
+        if (this.gameIsOver()) {
+            return this.activateEndButton('red');
+        }
+
+        if (!roundOver) {
+            if (this.tableValue === 31) {
+                this.appendMessage('The table will be reset since the total is 31.', color);
+            } else if (this.neitherCanPlay()) {
+                this.appendMessage('The table will be reset because both players cannot play.', color);
+            } 
+        }
+    },
+
+    resetTable: function() {
+        this.tableValue = 0;
+        this.inPlay = [];
+
+        const btn = document.querySelector('.confirmation-button');
+        btn.innerText = 'Continue';
+        /* if (duringPlay) {
+            this.updateButtonFunction('continueAfterReset(true)');
+        } else {
+            this.updateButtonFunction('continueAfterReset(false)');
+        } */
+        this.updateButtonFunction('continueAfterReset()');
+
+        this.appendMessage('Click \'Continue\' when ready.');
+    },
+
+    continueAfterReset: function() {
+        GameManager.updateInPlay();
+
+        if (player.hand.length !== 0) {
+            player.canPlay = true;
+            if (GameManager.lastToPlay.isComputer) {
+                GameManager.appendMessage('Please select 1 card to play.', 'purple');
+            }
+        }
+        if (computer.hand.length !== 0) {
+            computer.canPlay = true;
+        }
+
+        if (!GameManager.lastToPlay.isComputer) {
+            if (computer.canPlay) {
+                GameManager.playComputerCard();
+            }
+
+            if (!player.canPlay) { 
+                return this.chooseGo(false, false);
+            } else if (!GameManager.roundIsOver()) {
+                if (GameManager.tableShouldBeReset()) {
+                    this.scoreAndInformLastToPlay();
+                    GameManager.resetTable(); /* pass in true */
+                } else { 
+                    if (!GameManager.containsValidCard(document.querySelector('.player-cards-container').childNodes) && player.canPlay) {
+                        GameManager.updateButtonFunction('chooseGo()');
+                        document.querySelector('.confirmation-button').innerText = 'Go';
+                        GameManager.appendMessage('You must click \'Go\'.');
+                    }
+                }
+            } else {
+                this.scoreAndInformLastToPlay('black', true);
+                const btn = document.querySelector('.confirmation-button');
+                btn.innerText = 'Continue';
+                this.updateButtonFunction('clearForScoring()');
+                this.appendMessage('Both players are out of cards.', 'green');
+                this.appendMessage('Click \'Continue\' when ready.');
+            }
+        }
+
+        const btn = document.querySelector('.confirmation-button');
+        btn.innerText = 'Confirm Selection';
+        GameManager.updateButtonFunction('confirmSelection(1)');
+    },
+
+    // remove player from activeplayers; remove go btn and diable confirmation button
+    // pass in false to not display a message sying the player chose go
+    chooseGo: function(withMessage=true, withEnd=true) {
+        if (withMessage) {
+            this.appendMessage('Player1 chooses go.');
+        }
+        player.canPlay = false;
+
+        const confirmationButton = document.querySelector('.confirmation-button');
+        confirmationButton.innerText = 'Confirm Selection';
+        this.updateButtonFunction('confirmSelection(1)');
+        confirmationButton.classList.add('disabled-button');
+
+        const activeCards = document.querySelectorAll('.player-card-active');
+        activeCards.forEach(card => {
+            card.classList.remove('player-card-active');
+        });
+
+
+        while (!this.tableShouldBeReset()) {
+            this.playComputerCard();
+            this.updateInPlay();
+        }
+
+
+        this.scoreAndInformLastToPlay()
+
+
+        if (withEnd) {
+            this.resetTable(); /* no params */
+        } else {
+            confirmationButton.innerText = 'Continue';
+            this.updateButtonFunction('clearForScoring()');
+            this.appendMessage('Both players are out of cards.', 'orange');
+            this.appendMessage('Click \'Continue\' when ready.');
+        }
+    },
 
     endRoundAndScore: function() {
         this.renderHandsCopy();
@@ -367,141 +455,12 @@ let GameManager = {
     // returns if the table should be reset and appends messages on occasions
     // also scores lastToPlay
     tableShouldBeReset: function() {
-        Score.scoreLastToPlay(this.lastToPlay);
-
-        if (this.gameIsOver()) {
-            return this.activateEndButton('red');
-        }
-
-        /* if (this.tableValue === 31 || this.neitherCanPlay()) { */
-            /* if (this.roundIsOver()) {
-                return;
-            } else  */
-        if (this.tableValue === 31) {
-            this.appendMessage('The table will be reset since the total is 31.');
-        } else if (this.neitherCanPlay()) {
-            this.appendMessage('The table will be reset because both players cannot play.');
-        } 
-
-            /* this.tableValue = 0;
-            this.inPlay = [];
-            this.updateInPlay(); */
-
-            /* if (player.hand.length !== 0) {
-                player.canPlay = true;
-            }
-            if (computer.hand.length !== 0) {
-                computer.canPlay = true;
-            } */
-        /* } */
         return this.tableValue === 31 || this.neitherCanPlay();
     },
 
     clearForScoring: function() {
         GameManager.endRoundAndScore();
     },
-
-    resetTable: function(duringPlay=false) {
-        this.tableValue = 0;
-        this.inPlay = [];
-        
-        const btn = document.querySelector('.confirmation-button');
-        btn.innerText = 'Continue';
-        if (duringPlay) {
-            this.updateButtonFunction('continueAfterReset(true)');
-        } else {
-            this.updateButtonFunction('continueAfterReset(false)');
-        }
-
-        this.appendMessage('Click \'Continue\' when ready.');
-    },
-
-    continueAfterReset: function(duringPlay=false) {
-        /* this.appendMessage('Please select 1 card.'); */
-        GameManager.updateInPlay();
-
-        if (player.hand.length !== 0) {
-            player.canPlay = true;
-            if (GameManager.lastToPlay.isComputer) {
-                GameManager.appendMessage('Please select 1 card to play.');
-            }
-        }
-        if (computer.hand.length !== 0) {
-            computer.canPlay = true;
-            if (!GameManager.lastToPlay.isComputer) {
-                GameManager.playComputerCard();
-            }
-        }
-
-        if (duringPlay && !GameManager.lastToPlay.isComputer) {
-            /* if (computer.canPlay) {
-                GameManager.playComputerCard();
-            } */
-
-            if (!player.canPlay) { 
-                return this.chooseGo(false);
-            } else if (!GameManager.roundIsOver()) {
-                if (GameManager.tableShouldBeReset()) {
-                    GameManager.resetTable(GameManager.lastToPlay);
-                } else { // smae for GameManager else 
-                    if (!GameManager.containsValidCard(document.querySelector('.player-cards-container').childNodes) && player.canPlay) {
-                        GameManager.updateButtonFunction('chooseGo()');
-                        document.querySelector('.confirmation-button').innerText = 'Go';
-                        GameManager.appendMessage('You must click \'Go\'.');
-                    }
-                }
-            } else {
-                const btn = document.querySelector('.confirmation-button');
-                btn.innerText = 'Continue';
-                this.updateButtonFunction('clearForScoring()');
-                this.appendMessage('Both players are out of cards.');
-                this.appendMessage('Click \'Continue\' when ready.');
-            }
-        }
-
-        const btn = document.querySelector('.confirmation-button');
-        btn.innerText = 'Confirm Selection';
-        GameManager.updateButtonFunction('confirmSelection(1)');
-    },
-
-    // consider refactoring the if checks to be more efficient 
-    /* continueAfterReset: function(lastPlayer=false) {
-        this.updateInPlay();
-
-        if (player.hand.length !== 0) {
-            player.canPlay = true;
-            if (this.lastToPlay.isComputer) {
-                this.appendMessage('Please select 1 card to play.');
-            }
-        }
-        if (computer.hand.length !== 0) {
-            computer.canPlay = true;
-        }
-
-        const btn = document.querySelector('.confirmation-button');
-        btn.innerText = 'Confirm Selection';
-        this.updateButtonFunction('confirmSelection(1)');
-
-        if (lastPlayer && !lastPlayer.isComputer) {
-            if (computer.canPlay) {
-                this.playComputerCard();
-            }
-
-            if (!this.roundIsOver()) {
-                if (this.tableShouldBeReset()) {
-                    this.resetTable(this.lastToPlay);
-                } else { // smae for this else 
-                    if (!this.containsValidCard(document.querySelector('.player-cards-container').childNodes) && player.canPlay) {
-                        this.updateButtonFunction('chooseGo()');
-                        document.querySelector('.confirmation-button').innerText = 'Go';
-                        this.appendMessage('You must click \'Go\'.');
-                    }
-                }
-            } else {
-                this.endRoundAndScore();
-            }
-        }
-    }, */
 
     // returns if the both players have empty hands (which means the round is over)
     roundIsOver: function() {
@@ -571,11 +530,6 @@ let GameManager = {
     // include parentases and any paramters in the 
     updateButtonFunction: function(funcStr) {
         document.querySelector('.confirmation-button').setAttribute('onclick', 'GameManager.' + funcStr);
-        /* if (isCribSelection) {
-            document.querySelector('.confirmation-button').setAttribute('onclick', 'GameManager.confirmSelection(2)');
-        } else {
-            document.querySelector('.confirmation-button').setAttribute('onclick', 'GameManager.confirmSelection(1)');
-        } */
     },
 
     updateInPlay: function() {
@@ -588,7 +542,7 @@ let GameManager = {
 
     updateScore: function() {
         document.querySelector('.com-score').innerText = 'Computer Score: ' + computer.score;
-        document.querySelector('.player-score').innerText = 'Player1 Score: ' + player.score;
+        document.querySelector('.player-score').innerText = 'Player1    Score: ' + player.score;
     },
 
     // returns a sublist of nodes in cards that are playable, given the current tableValue; length 0 if no playable cards exist
@@ -612,48 +566,6 @@ let GameManager = {
         return false;
     },
 
-    // remove player from activeplayers; remove go btn and diable confirmation button
-    // pass in false to not display a message sying the player chose go
-    chooseGo: function(withMessage=true) {
-        if (withMessage) {
-            this.appendMessage('Player1 chooses go.');
-        }
-        /* const index = this.activePlayers.indexOf(player);
-        this.activePlayers.splice(index, 1); */
-        player.canPlay = false;
-
-        /* document.querySelector('.button-container').removeChild(document.querySelector('.go-button')); */
-        const confirmationButton = document.querySelector('.confirmation-button');
-        confirmationButton.innerText = 'Confirm Selection';
-        this.updateButtonFunction('confirmSelection(1)');
-        confirmationButton.classList.add('disabled-button');
-
-        const activeCards = document.querySelectorAll('.player-card-active');
-        activeCards.forEach(card => {
-            card.classList.remove('player-card-active');
-        });
-
-        /* this.tableShouldBeReset(); */
-
-        while (!this.tableShouldBeReset()) { /* this.activePlayers.length === 1 */
-            this.playComputerCard();
-            this.updateInPlay();
-        }
-
-        if (withMessage) {
-            this.resetTable();
-        } else {
-            confirmationButton.innerText = 'Continue';
-            this.updateButtonFunction('clearForScoring()');
-            this.appendMessage('Both players are out of cards.');
-            this.appendMessage('Click \'Continue\' when ready.');
-        }
-
-        /* if (this.lastToPlay.isComputer && player.canPlay) {
-            this.appendMessage('Please select 1 card.');
-        } */
-    },
-
     /* COMPUTER RANDOM METHODS */
     /* removes two random cards form the com-container and the com-hand; puts the random cards in the crib (as html node objects w/o the facedown class) */
     getComputerCribCards: function() {
@@ -672,14 +584,12 @@ let GameManager = {
     },
 
     // if the computer can play a card, it removes a random card from its hand and the com-container, and puts it in the inPlay list (updates tablevalue)
-    // if it cant play, it removes itself from the active players and tells the user it chose go
+    // if it cant play, it sets its inPlay to false and tells the user it chose go
     playComputerCard: function() {
         const cards = document.querySelector('.com-cards-container').childNodes;
         const playableCards = this.getPlayableCards(cards);
         if (playableCards.length <= 0) {
             this.appendMessage('The Computer chooses go.');
-            /* const index = this.activePlayers.indexOf(computer);
-            this.activePlayers.splice(index, 1); */
             computer.canPlay = false;
         } else {
             this.lastToPlay = computer;

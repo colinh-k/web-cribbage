@@ -8,7 +8,7 @@ let Score = {
     },
 
     scoreLastToPlay(lastToPlay) {
-        if (GameManager.neitherCanPlay()) {
+        if (GameManager.neitherCanPlay() && GameManager.tableValue !== 15 && GameManager.tableValue !== 31) {
             GameManager.appendMessage('1 point to ' + lastToPlay.name + ' (last to play).', 'green');
             lastToPlay.score += 1;
             GameManager.updateScore();
@@ -114,14 +114,40 @@ let Score = {
     scoreEORHand: function(scoringPlayer, cards, starterCard) {
         const ranksList = this.getRanksList(cards, starterCard);
         const valuesList = this.getValuesList(cards, starterCard);
-        this.updateIfScored(scoringPlayer, this.scoreOfAKindEOR(scoringPlayer, ranksList));
+        // check pair, trip, and quad (in that order)
+        for (let i = 2; i <= 4; i++) {
+            this.updateIfScored(scoringPlayer, this.scoreOfAKindEOR(scoringPlayer, ranksList, i));
+        }
+        /* this.updateIfScored(scoringPlayer, this.scoreOfAKindEOR(scoringPlayer, ranksList)); */
         this.updateIfScored(scoringPlayer, this.scoreCombosToTarget(scoringPlayer, valuesList, 15));
         this.updateIfScored(scoringPlayer, this.scoreStraights(scoringPlayer, ranksList));
         this.updateIfScored(scoringPlayer, this.scoreFlush(scoringPlayer, cards, starterCard));
         this.updateIfScored(scoringPlayer, this.scoreNobs(scoringPlayer, cards, starterCard));
     },
 
-    scoreOfAKindEOR: function(scoringPlayer, ranks) {
+    // ISSUE DATE JAN 3: when scoring a hand with a triplet AND a pair (of different ranks), the program only counts the pair 
+    //          it seems the points and message are overwritten in the last logic check in the method below 
+
+    scoreOfAKindEOR: function(scoringPlayer, ranks, type) {
+        let message = '', points = 0;
+        const target = this.countPairTripQuad(ranks, type);
+
+        if (target) {
+            if (type === 4) {
+                message = (target * 12) + ' points to ' + scoringPlayer.name + ' (' + target + ' unique quadruplet' + ((target == 1) ? ').' : 's).');;
+                points = target * 12;
+            } else if (type === 3) {
+                message = (target * 6) + ' points to ' + scoringPlayer.name + ' (' + target + ' unique triplet' + ((target == 1) ? ').' : 's).');;
+                points = target * 6;
+            } else if (type === 2) {
+                message = (target * 2) + ' points to ' + scoringPlayer.name + ' (' + target + ' unique pair' + ((target == 1) ? ').' : 's).');;
+                points = target * 2;
+            }
+        }
+        return [points, message];
+    },
+
+    /* scoreOfAKindEOR: function(scoringPlayer, ranks) {
         let message = '', points = 0;
         const pairs = this.countPairTripQuad(ranks, 2);
         const triplets = this.countPairTripQuad(ranks, 3);
@@ -140,7 +166,7 @@ let Score = {
             points = pairs * 2;
         }
         return [points, message];
-    },
+    }, */
 
     countPairTripQuad: function(ranks, target) {
         let targetList = [];
@@ -204,7 +230,7 @@ let Score = {
         })
         return sum;
     },
-    
+
     scoreStraights: function(scoringPlayer, ranks) {
         let message = '', points = 0;
         let scoreData = this.calcStraightsPoints(ranks);
